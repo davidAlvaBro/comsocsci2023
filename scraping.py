@@ -181,7 +181,7 @@ def get_2020_all(verbose=False):
         rows.append(row)
     
     # Make the dataframe 
-    df = pd.DataFrame(rows, columns=header[0:5])
+    df = pd.DataFrame(rows)#, columns=header[0:5])
     # Extract names from column 2 (zero indexed) starting from the 1 (zero indexed) element
     names_plus = [name.split(', ') for name in list(df.iloc[:,2][1:])]
     names = []
@@ -243,11 +243,13 @@ def get_all_names(verbose=False):
     
     # Collect into one set
     names_all = set()
-    names_all.add(names_2019_poster)
-    names_all.add(names_2019_oral)
-    names_all.add(names_2020_all)
-    names_all.add(names_2021_all)
+    names_all.update(names_2019_poster, names_2019_oral, names_2020_all, names_2021_all)
+    # names_all.add(names_2019_poster)
+    # names_all.add(names_2019_oral)
+    # names_all.add(names_2020_all)
+    # names_all.add(names_2021_all)
     
+    if verbose: print(f"There are {len(get_all_names())} unique names in total")
     return names_all
     
-    
+get_all_names(verbose=True)
