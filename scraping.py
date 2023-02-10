@@ -142,14 +142,16 @@ def get_2019_oral(verbose=False):
 
 
 
-#Setup - Lulz only if u b pleb 
-# requests.packages.urllib3.disable_warnings()
-# requests.packages.urllib3.util.ssl_.DEFAULT_CIPHERS += ':HIGH:!DH:!aNULL'
-# try:
-#     requests.packages.urllib3.contrib.pyopenssl.util.ssl_.DEFAULT_CIPHERS += ':HIGH:!DH:!aNULL'
-# except AttributeError:
-#     # no pyopenssl support used / needed / available
-#     pass
+#Setup - Lulz only if u b pleb
+def disable_warnings():
+    requests.packages.urllib3.disable_warnings()
+    requests.packages.urllib3.util.ssl_.DEFAULT_CIPHERS += ':HIGH:!DH:!aNULL'
+    try:
+        requests.packages.urllib3.contrib.pyopenssl.util.ssl_.DEFAULT_CIPHERS += ':HIGH:!DH:!aNULL'
+    except AttributeError:
+    # no pyopenssl support used / needed / available
+        pass
+
 def get_2020_all(verbose=False):
     """
     Get all names from the webpage : "https://ic2s2.mit.edu/program"
@@ -228,13 +230,15 @@ def get_2021_all(verbose=False):
     if verbose: f"There are {len(names)} different people and {counter} name occurences in {LINK}"
     return names
 
-def get_all_names(verbose=False):
+def get_all_names(verbose=False, Body = False):
     """
     Collects all four datasets's names into one set 
 
     Args:
         verbose (bool, optional): True -> prints comments about how many times names appear and how many there are
     """
+    if Body: disable_warnings()
+
     # Run the previous four methods
     names_2019_poster = get_2019_posters(verbose)
     names_2019_oral = get_2019_oral(verbose)
@@ -251,5 +255,6 @@ def get_all_names(verbose=False):
     
     if verbose: print(f"There are {len(get_all_names())} unique names in total")
     return names_all
-    
-get_all_names(verbose=True)
+
+if __name__ == "__main__":
+    get_all_names(verbose=True)
