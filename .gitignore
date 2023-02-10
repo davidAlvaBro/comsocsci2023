@@ -1,6 +1,7 @@
 _site
 Gemfile.lock
 .ipynb_checkpoints
+my_data
 data
 my_notebooks
 slides_and_videos
