@@ -244,6 +244,7 @@ def get_all_names(verbose=False):
     # Collect into one set
     names_all = set()
     names_all.update(names_2019_poster, names_2019_oral, names_2020_all, names_2021_all)
+    names_all -= {""}
     # names_all.add(names_2019_poster)
     # names_all.add(names_2019_oral)
     # names_all.add(names_2020_all)
@@ -252,4 +253,4 @@ def get_all_names(verbose=False):
     if verbose: print(f"There are {len(get_all_names())} unique names in total")
     return names_all
     
-get_all_names(verbose=True)
+# get_all_names(verbose=True)
