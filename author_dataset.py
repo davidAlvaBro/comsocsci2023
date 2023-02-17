@@ -6,7 +6,7 @@ import numpy as np
 
 # Get all names from week one 
 import scraping
-science_people = scraping.get_all_names()
+# science_people = scraping.get_all_names()
 
 def get_ids_and_coauthors(names):
     """
@@ -23,7 +23,7 @@ def get_ids_and_coauthors(names):
     BASE_URL = "https://api.semanticscholar.org/graph/"
     VERSION  = "v1/"
     RESOURCE = "author/search?query="
-    ADDITION = "&papers.authors"
+    ADDITION = "&fields=papers.authors"
     complete_url = BASE_URL + VERSION + RESOURCE
 
     # # Temporary check if there are more than 100 authors (we don't know batching)
@@ -35,6 +35,7 @@ def get_ids_and_coauthors(names):
     # Loop over authors 
     for name in names: 
         # Make request 
+        # print(complete_url + name + ADDITION) # Debugging
         response = requests.get(complete_url + name + ADDITION).json()
         
         # If something goes wrong, it will be reported here 
@@ -42,7 +43,7 @@ def get_ids_and_coauthors(names):
             for paper in response["data"][0]["papers"]: 
                 for author in paper["authors"]: 
                     ids.add(author["authorId"]) 
-        except: 
+        except: # Usually only occurs if the author has not realeased any papers or is not found 
             print(response)
             print(name)
     
@@ -165,13 +166,13 @@ def format_papers(ids_dict):
         # Aliases
         df["year"][i] = information["year"] 
         # DOI 
-        df["doi"][i] = information["doi"]
+        df["doi"][i] = [information["doi"]] # Can't have a dict, but it is okay to wrap it with list
         # citation count 
         df["citationCount"][i] = information["citationCount"]
         # field 
-        df["field"][i] = information["field"] # Does this work? 
+        df["field"][i] = information["field"] # Does this work? Yes somehow 
         # authors 
-        df["authors"][i] = information["authors"]
+        df["authors"][i] = list(information["authors"])
 
     return df
 
@@ -199,12 +200,19 @@ def get_data_from_ids(ids):
         params = "fields=aliases,name,papers.title,papers.abstract,papers.year,papers.externalIds,papers.s2FieldsOfStudy,papers.citationCount,papers.authors"
         
         # Make request 
-        req = requests.get(full_url, params=params)  
+        request = requests.get(full_url, params=params)  
         
         # Update dictionary 
-        ids_dict[id] = {"name": req.json()["name"], 
-                    "aliases": req.json()["aliases"],
-                    "papers": req.json()["papers"]}
+        # If something goes wrong, it will be reported here 
+        try: 
+            ids_dict[id] = {"name": request.json()["name"], 
+                    "aliases": request.json()["aliases"],
+                    "papers": request.json()["papers"]}
+        except: # Usually only occurs if the author has not realeased any papers or is not found 
+            print(f"The request that went wrong (id {id}): \n {request.json()}")
+    
+    # Just for debugging or if something goes wrong
+    save_data(ids_dict, "ids_dict") # Why is this being stored in the wrong place?
     
     # Create dataframes 
     df_author = format_authors(ids_dict)
@@ -214,8 +222,24 @@ def get_data_from_ids(ids):
 
 
 
-
-
+if __name__=="__main__": 
+    # Get names from week one 
+    science_people = scraping.get_all_names()
+    print("DONE WITH WEEK 1")
+    
+    # Get coauthors 
+    ids = get_ids_and_coauthors(list(science_people)[:2]) # the [:5] is only there until we find out how to handle batching
+    
+    # Get dataframes of papers and authors
+    if len(ids) > 200: 
+        df_author, df_paper = get_data_from_ids(list(ids)[:200])
+    else: 
+        df_author, df_paper = get_data_from_ids(ids)
+    
+    pd.DataFrame.to_csv(df_author, "df_author.csv")
+    pd.DataFrame.to_csv(df_paper, "df_paper.csv")
+    
+    
 
 
 
