@@ -18,8 +18,8 @@ def name(data, show_hist=False, plot=True, safeFig = False, n = 10000):
         Norm_P_median = np.median(Norm_p)
         x_vals = list(range(1, len(Cum_Mean) + 1))
 
-        fig, axs = plt.subplots(2, size = (10,2))
-        fig.tight_layout(pad=4)
+        fig, axs = plt.subplots(2)
+        fig.tight_layout(pad= 3)
         x = np.array(x_vals)[1:]
         ye = np.array(Cum_Mean)[1:]  # First value is excluded as standard error of a single point is Nan
         yerr = np.array(Cum_std_err[1:len(x) + 1])
@@ -27,11 +27,10 @@ def name(data, show_hist=False, plot=True, safeFig = False, n = 10000):
 
         axs[0].set_title("Mean for lognormal distribution")
 
-        axs[0].errorbar(x, ye, yerr=yerr, label='Error bars', linewidth=0.01, ecolor = "blue")
+        axs[0].errorbar(x, ye, yerr=yerr, label='Error bars', linewidth=0.5, ecolor = "blue")
         axs[0].plot(x_vals, Cum_Mean, '-', label = "Cumulative mean")
-        #axs[0].legend(loc='lower right')
         axs[0].plot([1, 2, 3, n], [Norm_P_mean, Norm_P_mean, Norm_P_mean, Norm_P_mean], label = "Distribution mean")
-        axs[0].legend(ncol = 3, size = 2)
+        axs[0].legend(ncol = 3)
         #plt.show()
 
         Cum_Median = Norm_p.rolling(len(Norm_p), min_periods=2).median()
@@ -44,7 +43,7 @@ def name(data, show_hist=False, plot=True, safeFig = False, n = 10000):
 
         # plt.legend(loc='lower right')
         axs[1].plot([0, n], [Norm_P_median, Norm_P_median], label = "Distribution mean")
-        axs[1].legend()
+        axs[1].legend(ncol = 2)
 
         fig.supxlabel("Number of elements used")
 
@@ -57,10 +56,10 @@ def name(data, show_hist=False, plot=True, safeFig = False, n = 10000):
             plt.savefig("my_data/lognormal.png")
 
 
-np.random.seed(12)
+np.random.seed(10)
 n = 10000
 normal = np.random.normal(0,4,size=(n))
 pareto = np.random.pareto(0.5, size=n)
 lognormal = np.random.lognormal(0,4, size= n)
-name(lognormal, safeFig=True)
+name(lognormal, safeFig=False, n = n)
 
