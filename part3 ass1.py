@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 
-def name(data, show_hist=False, plot=True, safeFig = False, n = 10000):
+def name(data, show_hist=False, plot=True, safeFig = False, n = 10000, name = "Distribution name"):
     Norm_p = pd.DataFrame(data)
 
     if show_hist:
@@ -25,7 +25,7 @@ def name(data, show_hist=False, plot=True, safeFig = False, n = 10000):
         yerr = np.array(Cum_std_err[1:len(x) + 1])
 
 
-        axs[0].set_title("Mean for lognormal distribution")
+        axs[0].set_title("Mean for " + name +" distribution")
 
         axs[0].errorbar(x, ye, yerr=yerr, label='Error bars', linewidth=0.5, ecolor = "blue")
         axs[0].plot(x_vals, Cum_Mean, '-', label = "Cumulative mean")
@@ -37,7 +37,7 @@ def name(data, show_hist=False, plot=True, safeFig = False, n = 10000):
         Cum_Median[0][0] = Norm_p[0][0]
 
         ye = np.array(Cum_Median)
-        axs[1].set_title("Median for lognormal distribution")
+        axs[1].set_title("Median for " + name +" distribution")
 
         axs[1].plot(x_vals, ye, label = "Cumulative median")
 
@@ -53,7 +53,7 @@ def name(data, show_hist=False, plot=True, safeFig = False, n = 10000):
 
         plt.show()
         if safeFig:
-            plt.savefig("my_data/lognormal.png")
+            plt.savefig("my_data/" + name +".png")
 
 
 np.random.seed(10)
@@ -61,5 +61,9 @@ n = 10000
 normal = np.random.normal(0,4,size=(n))
 pareto = np.random.pareto(0.5, size=n)
 lognormal = np.random.lognormal(0,4, size= n)
-name(lognormal, safeFig=False, n = n)
+df_papers = pd.read_csv("my_data/df_paper.csv")
+citationCount = df_papers['citationCount']
+sampledCitationCount = np.random.choice(np.array(citationCount), n)
+
+name(sampledCitationCount, safeFig=False, n = n, name = "sampledCitationCount")
 
